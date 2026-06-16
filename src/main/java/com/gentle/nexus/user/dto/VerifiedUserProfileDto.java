@@ -9,7 +9,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class UserRegisterDto {
+public class VerifiedUserProfileDto {
 
     @NotBlank
     private String ci;
@@ -17,16 +17,20 @@ public class UserRegisterDto {
     @NotBlank
     private String name;
 
-    @NotBlank
-    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,20}$")
-    private String password;
-
     @Nullable
     @Email
     private String email;
 
-    @NotBlank
     @Pattern(regexp = "^01(?:0|1|[6-9])-(?:\\d{3}|\\d{4})-\\d{4}$")
     private String phone;
+
+    public static VerifiedUserProfileDto from(String ci, UserProfileDto dto) {
+        return VerifiedUserProfileDto.builder()
+                .ci(ci)
+                .name(dto.getName())
+                .phone(dto.getPhone())
+                .email(dto.getEmail())
+                .build();
+    }
 
 }

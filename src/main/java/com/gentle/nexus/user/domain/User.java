@@ -34,4 +34,28 @@ public class User {
     @Column(nullable = false)
     UserStatus userStatus;
 
+    public void changeCi(String ci) {
+        this.ci = ci;
+    }
+
+    public void changeName(String name) {
+        this.name = name;
+    }
+
+    public void changePassword(String password) {
+        this.password = password;
+    }
+
+    public void changePhone(String phone) {
+        this.phone = phone;
+    }
+
+    public void changeEmail(String email) {
+        this.email = email;
+    }
+
+    public void changeUserStatus(UserStatus userStatus) {
+        this.userStatus = userStatus;
+    }
+
 }
