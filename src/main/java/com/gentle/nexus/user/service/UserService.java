@@ -1,10 +1,14 @@
 package com.gentle.nexus.user.service;
 
+import com.gentle.nexus.common.exception.BusinessException;
+import com.gentle.nexus.common.exception.ErrorCode;
 import com.gentle.nexus.user.domain.User;
 import com.gentle.nexus.user.domain.UserStatus;
 import com.gentle.nexus.user.dto.*;
 import com.gentle.nexus.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,24 +31,33 @@ public class UserService {
     }
 
     @Transactional
-    public UserRegisterResultDto register(UserRegisterDto userRegisterDto) {
-        User user = User.builder()
-                .ci(userRegisterDto.getCi())
-                .name(userRegisterDto.getName())
-                .password(passwordEncoder.encode(userRegisterDto.getPassword()))
-                .phone(userRegisterDto.getPhone())
-                .email(userRegisterDto.getEmail())
-                .userStatus(UserStatus.ACTIVE)
-                .build();
+    public UserRegisterResultDto register(UserRegisterDto dto) {
+        try {
+            User user = User.builder()
+                    .ci(dto.getCi())
+                    .name(dto.getName())
+                    .password(passwordEncoder.encode(dto.getPassword()))
+                    .phone(dto.getPhone())
+                    .email(dto.getEmail())
+                    .userStatus(UserStatus.ACTIVE)
+                    .build();
 
-        User savedUser = userRepository.save(user);
+            User savedUser = userRepository.save(user);
 
-        return UserRegisterResultDto.from(savedUser);
+            return UserRegisterResultDto.from(savedUser);
+        } catch (DataIntegrityViolationException e) {
+            throw new BusinessException(ErrorCode.DUPLICATE_USER);
+        } catch (DataAccessException e) {
+            throw new BusinessException(ErrorCode.DB_ERROR);
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Transactional
     public void modifyUser(Long id, VerifiedUserProfileDto verifiedUserUpdateDto) {
-        User user = userRepository.findById(id).orElseThrow();
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         user.changeCi(verifiedUserUpdateDto.getCi());
         user.changeName(verifiedUserUpdateDto.getName());
         user.changePhone(verifiedUserUpdateDto.getPhone());
@@ -53,16 +66,18 @@ public class UserService {
 
     @Transactional
     public void deleteUser(Long id) {
-        User user = userRepository.findById(id).orElseThrow();
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         user.changeUserStatus(UserStatus.DELETED);
     }
 
     @Transactional
     public void modifyUserPassword(Long id, UserPasswordDto userPasswordDto) {
         if (!userPasswordDto.getPassword().matches("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,20}$")) {
-            throw new IllegalArgumentException("적합하지 않은 비밀번호 입니다.");
+            throw new BusinessException(ErrorCode.INVALID_NEW_PASSWORD);
         }
-        User user = userRepository.findById(id).orElseThrow();
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         user.changePassword(passwordEncoder.encode(userPasswordDto.getPassword()));
     }
 

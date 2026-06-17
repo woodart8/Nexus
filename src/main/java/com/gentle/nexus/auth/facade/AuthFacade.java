@@ -3,6 +3,8 @@ package com.gentle.nexus.auth.facade;
 import com.gentle.nexus.auth.dto.SignUpRequestDto;
 import com.gentle.nexus.auth.dto.SignUpResponseDto;
 import com.gentle.nexus.auth.service.AuthService;
+import com.gentle.nexus.common.exception.BusinessException;
+import com.gentle.nexus.common.exception.ErrorCode;
 import com.gentle.nexus.common.infra.pass.dto.PassResponseDto;
 import com.gentle.nexus.user.dto.UserRegisterDto;
 import com.gentle.nexus.user.dto.UserRegisterResultDto;
@@ -21,27 +23,22 @@ public class AuthFacade {
         // CI 조회
         PassResponseDto passResponseDto = authService.issueCi(signUpRequestDto.getName(), signUpRequestDto.getPhone());
 
-        if (passResponseDto == null || passResponseDto.getSuccess().equals(false)) {
-            throw new IllegalArgumentException("CI 조회에 실패했습니다.");
-        }
+        UserRegisterDto userRegisterDto = buildUserRegister(passResponseDto.getCi(), signUpRequestDto);
 
-        UserRegisterDto userRegisterDto = UserRegisterDto.builder()
-                        .ci(passResponseDto.getCi())
-                        .name(passResponseDto.getName())
-                        .phone(passResponseDto.getPhone())
-                        .password(signUpRequestDto.getPassword())
-                        .email(signUpRequestDto.getEmail())
-                        .build();
+        // 회원 등록
         UserRegisterResultDto userRegisterResultDto = userService.register(userRegisterDto);
 
         // 결과 리턴
-        return SignUpResponseDto.builder()
-                .id(userRegisterResultDto.getId())
-                .name(userRegisterResultDto.getName())
-                .email(userRegisterResultDto.getEmail())
-                .phone(userRegisterResultDto.getPhone())
-                .success(true)
-                .build();
+        return SignUpResponseDto.from(userRegisterResultDto);
     }
 
+    private UserRegisterDto buildUserRegister(String ci, SignUpRequestDto dto) {
+        return UserRegisterDto.builder()
+                .ci(ci)
+                .name(dto.getName())
+                .phone(dto.getPhone())
+                .password(dto.getPassword())
+                .email(dto.getEmail())
+                .build();
+    }
 }
