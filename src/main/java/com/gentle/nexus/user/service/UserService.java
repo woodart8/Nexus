@@ -21,7 +21,8 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     public UserProfileDto getUserProfile(Long id) {
-        User user = userRepository.findByIdAndUserStatus(id, UserStatus.ACTIVE).orElseThrow();
+        User user = userRepository.findByIdAndUserStatus(id, UserStatus.ACTIVE)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
         return UserProfileDto.builder()
                 .name(user.getName())

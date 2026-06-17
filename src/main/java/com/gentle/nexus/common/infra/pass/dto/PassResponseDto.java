@@ -1,10 +1,12 @@
 package com.gentle.nexus.common.infra.pass.dto;
 
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
-@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PassResponseDto {
 
     private String ci;
