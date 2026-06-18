@@ -18,6 +18,9 @@ public class UserRegisterDto {
     private String name;
 
     @NotBlank
+    private String loginId;
+
+    @NotBlank
     @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,20}$")
     private String password;
 

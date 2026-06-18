@@ -21,6 +21,9 @@ public class User {
     @Column(nullable = false)
     String name;
 
+    @Column(unique = true, nullable = false)
+    String loginId;
+
     @Column(nullable = false)
     String password;
 
@@ -29,6 +32,10 @@ public class User {
 
     @Column(nullable = false)
     String email;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    UserRole role;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -52,6 +59,10 @@ public class User {
 
     public void changeEmail(String email) {
         this.email = email;
+    }
+
+    public void changeRole(UserRole role) {
+        this.role = role;
     }
 
     public void changeUserStatus(UserStatus userStatus) {

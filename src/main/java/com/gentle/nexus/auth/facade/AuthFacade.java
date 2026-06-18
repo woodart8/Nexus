@@ -3,8 +3,6 @@ package com.gentle.nexus.auth.facade;
 import com.gentle.nexus.auth.dto.SignUpRequestDto;
 import com.gentle.nexus.auth.dto.SignUpResponseDto;
 import com.gentle.nexus.auth.service.AuthService;
-import com.gentle.nexus.common.exception.BusinessException;
-import com.gentle.nexus.common.exception.ErrorCode;
 import com.gentle.nexus.common.infra.pass.dto.PassResponseDto;
 import com.gentle.nexus.user.dto.UserRegisterDto;
 import com.gentle.nexus.user.dto.UserRegisterResultDto;
@@ -37,6 +35,7 @@ public class AuthFacade {
                 .ci(ci)
                 .name(dto.getName())
                 .phone(dto.getPhone())
+                .loginId(dto.getLoginId())
                 .password(dto.getPassword())
                 .email(dto.getEmail())
                 .build();

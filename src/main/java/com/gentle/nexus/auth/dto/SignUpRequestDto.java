@@ -1,6 +1,6 @@
 package com.gentle.nexus.auth.dto;
 
-import jakarta.annotation.Nullable;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -13,6 +13,9 @@ public class SignUpRequestDto {
     private String name;
 
     @NotBlank
+    private String loginId;
+
+    @NotBlank
     @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,20}$")
     private String password;
 
@@ -20,7 +23,7 @@ public class SignUpRequestDto {
     @Pattern(regexp = "^01(?:0|1|[6-9])-(?:\\d{3}|\\d{4})-\\d{4}$")
     private String phone;
 
-    @Nullable
+    @NotBlank
     @Email
     private String email;
 

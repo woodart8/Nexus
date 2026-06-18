@@ -3,6 +3,7 @@ package com.gentle.nexus.user.service;
 import com.gentle.nexus.common.exception.BusinessException;
 import com.gentle.nexus.common.exception.ErrorCode;
 import com.gentle.nexus.user.domain.User;
+import com.gentle.nexus.user.domain.UserRole;
 import com.gentle.nexus.user.domain.UserStatus;
 import com.gentle.nexus.user.dto.*;
 import com.gentle.nexus.user.repository.UserRepository;
@@ -37,9 +38,11 @@ public class UserService {
             User user = User.builder()
                     .ci(dto.getCi())
                     .name(dto.getName())
+                    .loginId(dto.getLoginId())
                     .password(passwordEncoder.encode(dto.getPassword()))
                     .phone(dto.getPhone())
                     .email(dto.getEmail())
+                    .role(UserRole.ROLE_USER)
                     .userStatus(UserStatus.ACTIVE)
                     .build();
 
@@ -47,7 +50,7 @@ public class UserService {
 
             return UserRegisterResultDto.from(savedUser);
         } catch (DataIntegrityViolationException e) {
-            throw new BusinessException(ErrorCode.DUPLICATE_USER);
+            throw new BusinessException(ErrorCode.DATA_INTEGRITY_VIOLATION);
         } catch (DataAccessException e) {
             throw new BusinessException(ErrorCode.DB_ERROR);
         } catch (Exception e) {

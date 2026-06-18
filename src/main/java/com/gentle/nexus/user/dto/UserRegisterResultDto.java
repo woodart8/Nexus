@@ -1,5 +1,7 @@
 package com.gentle.nexus.user.dto;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.gentle.nexus.user.domain.User;
 import lombok.Builder;
 import lombok.Getter;
