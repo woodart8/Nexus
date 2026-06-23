@@ -18,6 +18,7 @@ public enum ErrorCode {
     DATA_INTEGRITY_VIOLATION(HttpStatus.BAD_REQUEST, "데이터 정합성 위반입니다."),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "알 수 없는 오류가 발생했습니다."),
     DUPLICATE_USER(HttpStatus.CONFLICT, "이미 존재하는 회원입니다."),
+    INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "부적합한 엑세스 토큰입니다."),
     INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "부적합한 리프레시 토큰입니다."),
     NO_REFRESH_TOKEN(HttpStatus.BAD_REQUEST, "리프레시 토큰이 없습니다.");
 

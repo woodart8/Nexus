@@ -5,6 +5,7 @@ import com.gentle.nexus.auth.facade.AuthFacade;
 import com.gentle.nexus.auth.service.AuthService;
 import com.gentle.nexus.common.exception.BusinessException;
 import com.gentle.nexus.common.exception.ErrorCode;
+import com.gentle.nexus.common.jwt.JwtProperties;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -19,8 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
 
-    @Value("${jwt.refresh-token-expiration}")
-    private static Long REFRESH_TOKEN_EXPIRATION;
+    private final JwtProperties jwtProperties;
     private final AuthFacade authFacade;
     private final AuthService authService;
 
@@ -40,8 +40,8 @@ public class AuthController {
         Cookie cookie = new Cookie("refresh_token", res.getRefreshToken());
         cookie.setHttpOnly(true);
         cookie.setSecure(false);
-        cookie.setPath("/auth/refresh");
-        cookie.setMaxAge(Math.toIntExact(REFRESH_TOKEN_EXPIRATION / 1000));
+        cookie.setPath("/");
+        cookie.setMaxAge(Math.toIntExact(jwtProperties.getRefreshTokenExpiration() / 1000));
 
         response.addCookie(cookie);
 
@@ -66,8 +66,8 @@ public class AuthController {
             Cookie cookie = new Cookie("refresh_token", res.getRefreshToken());
             cookie.setHttpOnly(true);
             cookie.setSecure(false);
-            cookie.setPath("/auth/refresh");
-            cookie.setMaxAge(Math.toIntExact(REFRESH_TOKEN_EXPIRATION / 1000));
+            cookie.setPath("/");
+            cookie.setMaxAge(Math.toIntExact(jwtProperties.getRefreshTokenExpiration() / 1000));
 
             response.addCookie(cookie);
         }
@@ -82,6 +82,9 @@ public class AuthController {
             Authentication authentication,
             HttpServletResponse response
     ) {
+        if (authentication == null || authentication.getPrincipal() == null)
+            throw new BusinessException(ErrorCode.INVALID_ACCESS_TOKEN);
+
         authService.logout((Long)authentication.getPrincipal());
 
         Cookie cookie = new Cookie("refresh_token", null);

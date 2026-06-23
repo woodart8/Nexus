@@ -1,35 +1,33 @@
 package com.gentle.nexus.auth.service;
 
+import com.gentle.nexus.common.jwt.JwtProperties;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 
 @Service
+@RequiredArgsConstructor
 public class RefreshTokenService {
 
+    private final JwtProperties jwtProperties;
     private final RedisTemplate<String, String> redisTemplate;
-
-    private static final String PREFIX = "RT:";
-
-    public RefreshTokenService(RedisTemplate<String, String> redisTemplate) {
-        this.redisTemplate = redisTemplate;
-    }
 
     public void save(Long userId, String refreshToken) {
         redisTemplate.opsForValue()
-                .set(PREFIX + userId, refreshToken, Duration.ofDays(7));
+                .set(jwtProperties.getPrefix() + userId, refreshToken, Duration.ofDays(7));
     }
 
     public String get(Long userId) {
-        return redisTemplate.opsForValue().get(PREFIX + userId);
+        return redisTemplate.opsForValue().get(jwtProperties.getPrefix() + userId);
     }
 
     public void rotate(Long userId, String refreshToken) {
-        redisTemplate.opsForValue().set(PREFIX + userId, refreshToken, Duration.ofDays(7));
+        redisTemplate.opsForValue().set(jwtProperties.getPrefix() + userId, refreshToken, Duration.ofDays(7));
     }
 
     public void delete(Long userId) {
-        redisTemplate.delete(PREFIX + userId);
+        redisTemplate.delete(jwtProperties.getPrefix() + userId);
     }
 }
