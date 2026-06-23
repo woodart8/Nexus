@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum ErrorCode {
 
+    NOT_ENOUGH_BALANCE(HttpStatus.BAD_REQUEST, "잔액이 부족합니다."),
+    AMOUNT_MUST_BE_POSITIVE(HttpStatus.BAD_REQUEST, "금액은 0보다 커야합니다."),
     LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "로그인에 실패했습니다. 아이디 또는 비밀번호를 다시 확인해주세요."),
     INVALID_REQUEST(HttpStatus.BAD_REQUEST, "적합하지 않은 요청입니다."),
     INVALID_NEW_PASSWORD(HttpStatus.BAD_REQUEST, "적합하지 않은 새 비밀번호입니다."),
