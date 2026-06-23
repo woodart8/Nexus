@@ -9,7 +9,9 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
 
+    @Value("${jwt.refresh-token-expiration}")
+    private static Long REFRESH_TOKEN_EXPIRATION;
     private final AuthFacade authFacade;
     private final AuthService authService;
 
@@ -37,7 +41,7 @@ public class AuthController {
         cookie.setHttpOnly(true);
         cookie.setSecure(false);
         cookie.setPath("/auth/refresh");
-        cookie.setMaxAge(7 * 24 * 60 * 60);
+        cookie.setMaxAge(Math.toIntExact(REFRESH_TOKEN_EXPIRATION / 1000));
 
         response.addCookie(cookie);
 
@@ -63,7 +67,7 @@ public class AuthController {
             cookie.setHttpOnly(true);
             cookie.setSecure(false);
             cookie.setPath("/auth/refresh");
-            cookie.setMaxAge(7 * 24 * 60 * 60);
+            cookie.setMaxAge(Math.toIntExact(REFRESH_TOKEN_EXPIRATION / 1000));
 
             response.addCookie(cookie);
         }
@@ -72,5 +76,24 @@ public class AuthController {
                 TokenDto.builder().accessToken(res.getAccessToken()).build()
         );
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(
+            Authentication authentication,
+            HttpServletResponse response
+    ) {
+        authService.logout((Long)authentication.getPrincipal());
+
+        Cookie cookie = new Cookie("refresh_token", null);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok("로그아웃 성공");
+    }
+
 
 }

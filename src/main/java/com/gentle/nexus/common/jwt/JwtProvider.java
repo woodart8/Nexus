@@ -13,7 +13,13 @@ import java.util.Date;
 public class JwtProvider {
 
     @Value("${jwt.secret}")
-    private String JWT_SECRET;
+    private static String JWT_SECRET;
+
+    @Value("${jwt.access-token-expiration}")
+    private static Long ACCESS_TOKEN_EXPIRATION;
+
+    @Value("${jwt.refresh-token-expiration}")
+    private static Long REFRESH_TOKEN_EXPIRATION;
 
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(JWT_SECRET.getBytes(StandardCharsets.UTF_8));
@@ -22,7 +28,7 @@ public class JwtProvider {
     public String createAccessToken(Long userId) {
         return Jwts.builder()
                 .subject(String.valueOf(userId))
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 15))
+                .expiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION))
                 .signWith(getSigningKey())
                 .compact();
     }
@@ -30,7 +36,7 @@ public class JwtProvider {
     public String createRefreshToken(Long userId) {
         return Jwts.builder()
                 .subject(String.valueOf(userId))
-                .expiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 7))
+                .expiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION))
                 .signWith(getSigningKey())
                 .compact();
     }
