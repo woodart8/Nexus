@@ -4,6 +4,7 @@ import com.gentle.nexus.account.domain.Account;
 import com.gentle.nexus.account.domain.AccountNumberSeq;
 import com.gentle.nexus.account.domain.AccountStatus;
 import com.gentle.nexus.account.dto.AccountDto;
+import com.gentle.nexus.account.dto.ChangeAccountPasswordDto;
 import com.gentle.nexus.account.dto.CreateAccountRequestDto;
 import com.gentle.nexus.account.repository.AccountNumberSeqRepository;
 import com.gentle.nexus.account.repository.AccountRepository;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -61,6 +63,20 @@ public class AccountService {
         } catch (Exception e) {
             throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @Transactional
+    public void modifyAccountPassword(Long userId, ChangeAccountPasswordDto req) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+        Account account = accountRepository.findByAccountNumber(req.getAccountNumber())
+                .orElseThrow(() -> new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND));
+
+        if (!account.getUser().getId().equals(user.getId())) {
+            throw new BusinessException(ErrorCode.FORBIDDEN);
+        }
+
+        account.changePassword(passwordEncoder.encode(req.getPassword()));
     }
 
     private String generateAccountNumber(Long accountId) {
