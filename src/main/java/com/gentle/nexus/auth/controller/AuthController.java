@@ -6,6 +6,7 @@ import com.gentle.nexus.auth.service.AuthService;
 import com.gentle.nexus.common.exception.BusinessException;
 import com.gentle.nexus.common.exception.ErrorCode;
 import com.gentle.nexus.common.jwt.JwtProperties;
+import com.gentle.nexus.common.utils.SecurityUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -82,10 +83,8 @@ public class AuthController {
             Authentication authentication,
             HttpServletResponse response
     ) {
-        if (authentication == null || authentication.getPrincipal() == null)
-            throw new BusinessException(ErrorCode.INVALID_ACCESS_TOKEN);
-
-        authService.logout((Long)authentication.getPrincipal());
+        Long userId = SecurityUtil.getCurrentUserId(authentication);
+        authService.logout(userId);
 
         Cookie cookie = new Cookie("refresh_token", null);
         cookie.setHttpOnly(true);

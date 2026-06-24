@@ -25,6 +25,7 @@ public class Account extends BaseTimeEntity {
 
     // 계좌 소유자
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private User user;
 
     // 계좌번호
@@ -46,6 +47,10 @@ public class Account extends BaseTimeEntity {
     // 계좌 종류
     @Enumerated(EnumType.STRING)
     private AccountType type;
+
+    public void assignAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
+    }
 
     public void changePassword(String password) {
         this.password = password;
