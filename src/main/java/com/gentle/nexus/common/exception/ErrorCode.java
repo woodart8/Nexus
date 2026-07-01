@@ -24,7 +24,8 @@ public enum ErrorCode {
     INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "부적합한 엑세스 토큰입니다."),
     INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "부적합한 리프레시 토큰입니다."),
     NO_REFRESH_TOKEN(HttpStatus.BAD_REQUEST, "리프레시 토큰이 없습니다."),
-    FORBIDDEN(HttpStatus.FORBIDDEN, "권한이 없습니다.");
+    FORBIDDEN(HttpStatus.FORBIDDEN, "권한이 없습니다."),
+    INVALID_TRANSFER(HttpStatus.BAD_REQUEST, "동일 계좌로는 송금할 수 없습니다.");
 
     private final HttpStatus status;
     private final String message;
